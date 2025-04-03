@@ -1,15 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <nlohmann/json.hpp> // JSON library (https://github.com/nlohmann/json)
-
+#include <nlohmann/json.hpp> 
 using json = nlohmann::json;
 using namespace std;
 
-// Constants
-const char* TASKS_FILE = "/home/fady/SW/tasks.txt";  // File path for saving tasks
-
-// Struct to hold task data
+const char* TASKS_FILE = "/home/fady/SW/tasks.txt";  
 struct Task {
     int id; 
     char name[100];
@@ -22,12 +18,9 @@ struct Task {
     int numberOfOverdueTasks;
     char predictedPriority[50];
 };
-
-// Global task storage
 Task tasks[100];  
 int taskCount = 0; 
 
-// Saves all tasks into a file in JSON Lines format
 void saveAllTasks() {
     ofstream file(TASKS_FILE);
     
@@ -56,46 +49,6 @@ void saveAllTasks() {
     cout << "Tasks saved successfully to " << TASKS_FILE << endl;
 }
 
-// Loads tasks from file
-void loadTasks() {
-    ifstream file(TASKS_FILE);
-    if (!file) {
-        cout << "No previous tasks found. Starting fresh.\n";
-        return;
-    }
-
-    taskCount = 0; // Reset
-    string line;
-
-    while (getline(file, line)) {
-        if (line.empty()) continue; 
-
-        try {
-            json taskJson = json::parse(line);
-            Task& task = tasks[taskCount];
-
-            task.id = taskJson["id"];
-            strncpy(task.name, taskJson["name"].get<string>().c_str(), sizeof(task.name));
-            task.daysLeft = taskJson["Days_Left"];
-            strncpy(task.taskType, taskJson["Task_Type"].get<string>().c_str(), sizeof(task.taskType));
-            task.estimatedDuration = taskJson["Estimated_Duration"];
-            strncpy(task.deadlineTime, taskJson["Deadline_Time"].get<string>().c_str(), sizeof(task.deadlineTime));
-            task.taskImportance = taskJson["Task_Importance"];
-            task.pastCompletionRate = taskJson["Past_Completion_Rate"];
-            task.numberOfOverdueTasks = taskJson["Number_Of_Overdue_Tasks"];
-            strncpy(task.predictedPriority, taskJson["Priority_Level"].get<string>().c_str(), sizeof(task.predictedPriority));
-
-            taskCount++;
-
-        } catch (const json::parse_error& e) {
-            cerr << "Skipping invalid JSON line: " << line << endl;
-        }
-    }
-
-    file.close();
-}
-
-// Helper function to get a valid number from the user
 int getNumber(const char* prompt) {
     int num;
     while (true) {
@@ -110,7 +63,6 @@ int getNumber(const char* prompt) {
     }
 }
 
-// Adds a new task
 void createTask() {
     if (taskCount >= 100) {
         cout << "Task limit reached.\n";
@@ -145,7 +97,6 @@ void createTask() {
     cout << "Task added successfully!\n";
 }
 
-// Displays all tasks
 void showTasks() {
     if (taskCount == 0) {
         cout << "No tasks available.\n";
@@ -167,7 +118,6 @@ void showTasks() {
     }
 }
 
-// Deletes a task by ID
 void removeTask() {
     int id = getNumber("Enter task ID to delete: ");
 
@@ -193,7 +143,6 @@ void removeTask() {
     cout << "Task deleted.\n";
 }
 
-// Calls a Python script to predict task priority
 void predictTaskPriority() {
     saveAllTasks();
     cout << "Running priority prediction script...\n";
@@ -206,8 +155,45 @@ void predictTaskPriority() {
     }
 }
 
-// Menu function
-void menu() {
+
+
+// Main function
+int main() {
+    ifstream file(TASKS_FILE);
+    if (!file) {
+        cout << "No previous tasks found. Starting fresh.\n";
+        return;
+    }
+
+    taskCount = 0; 
+    string line;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue; 
+
+        try {
+            json taskJson = json::parse(line);
+            Task& task = tasks[taskCount];
+
+            task.id = taskJson["id"];
+            strncpy(task.name, taskJson["name"].get<string>().c_str(), sizeof(task.name));
+            task.daysLeft = taskJson["Days_Left"];
+            strncpy(task.taskType, taskJson["Task_Type"].get<string>().c_str(), sizeof(task.taskType));
+            task.estimatedDuration = taskJson["Estimated_Duration"];
+            strncpy(task.deadlineTime, taskJson["Deadline_Time"].get<string>().c_str(), sizeof(task.deadlineTime));
+            task.taskImportance = taskJson["Task_Importance"];
+            task.pastCompletionRate = taskJson["Past_Completion_Rate"];
+            task.numberOfOverdueTasks = taskJson["Number_Of_Overdue_Tasks"];
+            strncpy(task.predictedPriority, taskJson["Priority_Level"].get<string>().c_str(), sizeof(task.predictedPriority));
+
+            taskCount++;
+
+        } catch (const json::parse_error& e) {
+            cerr << "Skipping invalid JSON line: " << line << endl;
+        }
+    }
+
+    file.close();
     int choice;
     do {
         cout << "\nTask Manager Menu:\n"
@@ -235,9 +221,5 @@ void menu() {
     } while (choice != 5);
 }
 
-// Main function
-int main() {
-    loadTasks();
-    menu();
     return 0;
 }
