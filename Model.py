@@ -13,10 +13,10 @@ categorical_columns = ["Task_Type"]
 for col in categorical_columns:
     le = LabelEncoder()
     df[col] = le.fit_transform(df[col])
-    label_encoders[col] = le  # Store encoder
+    label_encoders[col] = le  
 le_priority = LabelEncoder()
 df["Priority_Level"] = le_priority.fit_transform(df["Priority_Level"])
-label_encoders["Priority_Level"] = le_priority  # Critical for predictions
+label_encoders["Priority_Level"] = le_priority  
 
 def time_to_minutes(time_str):
     time_parts = time_str.split()
