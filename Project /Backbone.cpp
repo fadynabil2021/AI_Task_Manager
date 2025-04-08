@@ -5,6 +5,7 @@
 using json = nlohmann::json;
 using namespace std;
 
+const Password =12345;
 const char* TASKS_FILE = "/home/fady/SW/tasks.txt";  
 struct Task {
     int id; 
@@ -155,10 +156,12 @@ void predictTaskPriority() {
     }
 }
 
-
-
-// Main function
 int main() {
+    int pass;
+    cout<<"Enter the password: ";
+    cin >> pass;
+    if (pass == Password)
+    {
     ifstream file(TASKS_FILE);
     if (!file) {
         cout << "No previous tasks found. Starting fresh.\n";
@@ -219,6 +222,7 @@ int main() {
             default: cout << "Invalid option. Try again.\n"; break;
         }
     } while (choice != 5);
+}
 }
 
     return 0;
