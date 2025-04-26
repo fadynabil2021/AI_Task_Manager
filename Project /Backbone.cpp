@@ -5,7 +5,7 @@
 using json = nlohmann::json;
 using namespace std;
 
-const Password =12345;
+const int Password =12345;
 const char* TASKS_FILE = "/home/fady/SW/tasks.txt";  
 struct Task {
     int id; 
